@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>entry</title>
+  </head>
+
+  <body class="bg-neutral-950 w-full h-screen">
+    <div id="app" class="h-full w-full">
+      <div class="px-4 py-2 h-16">
+        <div class="">
+          <h3 class="text-3xl text-blue-200">Shader Time!</h3>
+        </div>
+      </div>
+      <div class="flex flex-row justify-start items-center gap-2 h-full px-1">
+        <div class="w-2xl bg-cyan-900/40 h-full rounded-sm flex flex-col justify-baseline items-center">
+
+        </div>
+        <div class="w-full bg-gray-700/60 h-full rounded-sm p-2">
+          <canvas id="canvas" class="w-full h-full border-2 border-teal-800 rounded-sm"></canvas>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+
+</html>
