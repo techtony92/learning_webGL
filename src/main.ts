@@ -36,6 +36,58 @@ context.uniform2f(uPositionLocation, 0, -.2);
 const uPointSizeLocation = context.getUniformLocation(glShaderInterface, 'uPointSize');
 context.uniform1f(uPointSizeLocation, 100);
 
+//^----Attributes----^\\
+/**
+ * * Only available in vertex shaders.
+ * * Uses storage qualifiers for passing values from vertex-shader to fragment-shader
+ * * These values can change for every vertex in the buffer.
+ * * In WebGL 1.0 the `attribute` type qualifier was used.
+ * * In WebGL 2.0+ the `attribute` type qualifier was depricated and no longer compiles.  
+ * * Instead we not use the storage qualifier `in`. 
+ * * The type qualifier `varying` is also depricated and instead we use the storage
+ * * qualifier `out`
+ * * The number of attribute you can declare in a vertex shader is limited, but each WebGLProgram guarantees at
+ * * least 16, though some platforms allow for more(varies from device to device).
+ * * This value can be found using "context".getParameter('context'.MAX_VERTEX_ATTRIBS);
+ * * Some devices may be unable to view your app if you declare more attributes than they can support so
+ * * using more than 16 is risky.
+ * * The number of vertices is also limited, but its unlikely you will use anywhere near the max of about 65,536
+ * ****/
+
+//^----Flow of the Attribute----^\\
+/***
+ * * Vertex Shader                              Fragment Shader
+ * *  attributes                                    varyings
+ * * in vec4 aPosition;                          in vec4 vColor;
+ * * in vec4 aColor.                           fragment output  
+ * * out vec4 vColor;                           out vec4 fragColor;
+ * * main()                                     main()
+ * * {                                          {
+ * *    gl_Position = aPosition;                    fragColor = vColor;
+ * *    vColor = aColor;                        }
+ * * }
+ * * 
+ * * In your vertex shader, `attributes` come *in* from your Javascript/Typescript,
+ * * and `varyings` go *out* to your fragment shader
+ * * In your fragment shader, `varyings` come in from your vertex shader, and the 
+ * * resulting color information go out to the framebuffer and to the canvas.
+ * **/
+// Attribute Positioning
+
+// Get Attribute Locations 
+const aPositionLocation = context.getAttribLocation(glShaderInterface, 'aPosition');
+const aPointSizeLocation = context.getAttribLocation(glShaderInterface, 'aPointSize');
+console.log(aPositionLocation, aPointSizeLocation);
+
+//^----Colors:Unforms----^\\
+/***
+ * * To modify color data, we need to modify values inside the fragment shader
+ * * we can specify colors from JS or inside the fragment shader.
+ * * Attributes are not available inside fragment shaders, only vertex shaders.
+ * * As such, we can either use uniforms for color data, or attributes, with 
+ * * storage modifiers
+ *  * We don't need to use storage qualifiers for uniforms, only attributes
+ * **/
 const uIndexLocation = context.getUniformLocation(glShaderInterface, 'uIndex');
 context.uniform1i(uIndexLocation, 1);
 
@@ -46,13 +98,6 @@ context.uniform4fv(uColorsLocation, [
     0, 0, 1, 1,
 
 ]);
-
-// Attribute Positioning
-
-// Get Attribute Locations 
-const aPositionLocation = context.getAttribLocation(glShaderInterface, 'aPosition');
-const aPointSizeLocation = context.getAttribLocation(glShaderInterface, 'aPointSize');
-console.log(aPositionLocation, aPointSizeLocation);
 
 
 // Enable Vertex Attributes
@@ -76,6 +121,11 @@ context.enableVertexAttribArray(aPositionLocation);
  * * The stride is (Total number of values in a row(3) * the ARRAYS PRIMITIVE BYTE type (4)) = 3*4
  * *
  * **/
+// const bufferData = new Float32Array([
+//     0, 0, 100,
+//     .5, -.8, 32,
+//     -.9, .5, 50,
+// ]);
 const bufferData = new Float32Array([
     0, 0, 100,
     .5, -.8, 32,
@@ -116,4 +166,35 @@ context.bufferData(context.ARRAY_BUFFER, bufferData, context.STATIC_DRAW);
  * **/
 context.vertexAttribPointer(aPositionLocation, 2, context.FLOAT, false, 3 * 4, 0);
 context.vertexAttribPointer(aPointSizeLocation, 1, context.FLOAT, false, 3 * 4, 2 * 4);
+context.drawArrays(context.POINTS, 0, 3);
+
+/**
+ * *=========================================================================================================
+*/
+
+/**
+ ** Changing Color
+*/
+
+const bufferDataWithColor = new Float32Array([
+
+    0, 0, 100, 1, 0, 0,
+    .5, -.8, 32, 0, 1, 0,
+    -.9, .5, 50, 0, 0, 1
+]);
+/**
+ * * [X, Y, Size, RGB] : Stride is now 6 meaning 6 * 4
+*/
+
+const aColorLocation = context.getAttribLocation(glShaderInterface, 'aColor');
+context.enableVertexAttribArray(aColorLocation);
+
+//const buffer = context.createBuffer();
+context.bindBuffer(context.ARRAY_BUFFER, buffer);
+context.bufferData(context.ARRAY_BUFFER, bufferDataWithColor, context.STATIC_DRAW);
+
+
+context.vertexAttribPointer(aPositionLocation, 2, context.FLOAT, false, 6 * 4, 0);
+context.vertexAttribPointer(aPointSizeLocation, 1, context.FLOAT, false, 6 * 4, 2 * 4);
+context.vertexAttribPointer(aColorLocation, 3, context.FLOAT, false, 6 * 4, 3 * 4)
 context.drawArrays(context.POINTS, 0, 3);
