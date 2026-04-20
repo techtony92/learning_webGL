@@ -1,6 +1,6 @@
 import configureShaders from "@/configureShaders";
 
-export default async function _003_attributes_part_2_color(context: WebGL2RenderingContext) {
+export default async function _003_attributes_part_1_color(context: WebGL2RenderingContext) {
     const glShaderInterface = await configureShaders(context, './03_attributes_part_2_color', 'vSource', 'fSource');
     //^----Attributes----^\\
     /**
